@@ -56,10 +56,3 @@ def estimate(model,num=0,imgPath="./test_imgs"):
 
     return fake_resize,gray
    
-    
-# if __name__ == "__main__":
-#     depthModel = colorizer_init()
-#     pred,gray  = estimate(depthModel,5)
-#     new= np.concatenate([gray, pred], 1)
-#     plt.imshow(new)
-#     plt.show()
