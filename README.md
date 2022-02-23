@@ -1,4 +1,4 @@
-# depth_colourisation
+# Colourisation with depth estimate fusion
  
 This project does colourisation of black and white images using the fusion of a despth estimate.
 
