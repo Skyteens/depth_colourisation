@@ -1,4 +1,4 @@
-from diverseDepth.diverse_depth_model import RelDepthModel
+from .diverseDepth.diverse_depth_model import RelDepthModel
 import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
 import cv2
@@ -13,11 +13,12 @@ def load_weights(model):
     """
     Load checkpoint.
     """
-    loc = os.path.dirname(os.path.abspath(__file__))
+    #loc = os.path.dirname(os.path.abspath(__file__))
     #print(loc)
-    weights= os.path.join(loc, "diverseDepth/model.pth")
+    #weights= os.path.join(loc, "diverseDepth/model.pth")
     #weights=  "/content/drive/MyDrive/weights/depthEstimate.pth"
 
+    weights=  "./weights/depthEstimate.pth"
     checkpoint = torch.load(weights, map_location=lambda storage, loc: storage, pickle_module=dill)
     model_state_dict_keys = model.state_dict().keys()
     checkpoint_state_dict_noprefix = strip_prefix_if_present(checkpoint['model_state_dict'], "module.")
