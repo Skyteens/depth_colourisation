@@ -2,7 +2,11 @@
  
 This project does colourisation of black and white images using the fusion of a despth estimate.
 
-Please use the google colab notebook to see the results.
+Feel free to use the google colab notebook to see the results.
+
+Test images are from the COCO dataset
+
+More information and data will be released later
 
 # Acknowledgements
 
