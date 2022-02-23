@@ -48,7 +48,7 @@ def colorizer_init():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     net_encoder = ModelBuilder.build_encoder(
-    arch="depth")
+    arch="inst_depth")
 
     net_decoder = ModelBuilder.build_decoder(
         arch="ppm_unet",
@@ -57,7 +57,7 @@ def colorizer_init():
 
     generator = Generator(net_encoder, net_decoder)
     net_G = generator.to(device)
-    w= "./weights/depthColour.pt"
+    w= "./weights/inst_depth.pt"  #depthColour.pt"
     net_G.load_state_dict(torch.load(w, map_location=device))
 
     for m in net_G.modules():

@@ -283,6 +283,114 @@ class Depth_encoder(nn.Module):
             return conv_out
         return [x]   
 
+class inst_Depth_encoder(nn.Module):
+    def __init__(self,orig_resnet,dil_resnet):
+        super().__init__() 
+
+        #depth encoder
+        self.conv1_1 = orig_resnet.conv1
+        
+        self.bn1_1 = orig_resnet.bn1
+        self.relu1_1 = orig_resnet.relu1
+        self.conv2_1 = orig_resnet.conv2
+        self.bn2_1 = orig_resnet.bn2
+        self.relu2_1 = orig_resnet.relu2
+        self.conv3_1 = orig_resnet.conv3
+        self.bn3_1 = orig_resnet.bn3
+        self.relu3_1 = orig_resnet.relu3
+        
+        
+        self.layer1_1 = orig_resnet.layer1
+        self.layer2_1 = orig_resnet.layer2
+        self.layer3_ori = orig_resnet.layer3
+        self.layer4_ori = orig_resnet.layer4
+
+        self.maxpool = orig_resnet.maxpool
+        
+        #BW encoder
+        self.conv1 = orig_resnet.conv1
+
+        #self.bn1 = orig_resnet.bn1
+        self.in1 = nn.InstanceNorm2d(64)
+        self.relu1 = orig_resnet.relu1
+        self.conv2 = orig_resnet.conv2
+
+        #self.bn2 = orig_resnet.bn2
+        self.in2 = nn.InstanceNorm2d(64)
+
+        self.relu2 = orig_resnet.relu2
+        self.conv3 = orig_resnet.conv3
+
+        self.in3 = nn.InstanceNorm2d(128)
+        #self.bn3 = orig_resnet.bn3
+
+        self.relu3 = orig_resnet.relu3
+ 
+        self.layer1 = orig_resnet.layer1
+        self.layer2 = orig_resnet.layer2
+        self.layer3_dil = dil_resnet.layer3
+        self.layer4_dil = dil_resnet.layer4
+
+        self.fuse_depth_ratio = 0.3
+    
+    def fuse(self,mono,depth):
+      ratio = self.fuse_depth_ratio
+      mono = mono * (1-ratio)
+      depth =depth * ratio
+      return torch.add(mono,depth)
+
+    def encoder_part1(self,in_x):
+      out = self.relu1(self.in1(self.conv1(in_x)))
+      out = self.relu2(self.in2(self.conv2(out)))
+      out = self.relu3(self.in3(self.conv3(out)))
+      skip1 = out.clone()
+      out = self.maxpool(out)
+
+      out = self.layer1(out)
+      return out,skip1
+
+    def forward(self,x,x_depth=None,return_feature_maps=False):
+        depth_layers = []
+        conv_out = []
+        
+        #x_depth,_ = self.encoder_part1(x_depth)
+        
+        x_depth = self.relu1_1(self.bn1_1(self.conv1_1(x_depth)))
+        x_depth = self.relu2_1(self.bn2_1(self.conv2_1(x_depth)))
+        x_depth = self.relu3_1(self.bn3_1(self.conv3_1(x_depth)))
+        x_depth= self.maxpool(x_depth)
+        x_depth= self.layer1_1(x_depth)
+        x_depth = self.layer2_1(x_depth);depth_layers.append(x_depth)
+        x_depth = self.layer3_ori(x_depth); depth_layers.append(x_depth)
+        x_depth = self.layer4_ori(x_depth); depth_layers.append(x_depth)
+
+        x,skip1 = self.encoder_part1(x)
+
+        conv_out.append(skip1)
+        conv_out.append(x)
+
+        x = self.layer2(x)
+        d1 = depth_layers[0]
+        #d1 = self.fusion1(d1)
+        x = self.fuse(x, d1)
+        conv_out.append(x)
+        
+        x = self.layer3_dil(x)
+        d2 = depth_layers[1]
+        #d2 = self.fusion2(d2)
+        x = self.fuse(x, d2)
+        conv_out.append(x)
+        
+        x = self.layer4_dil(x)
+        d3 = depth_layers[2]
+        #d3 = self.fusion3(d3)
+        x = self.fuse(x, d3)
+        conv_out.append(x)
+
+        if return_feature_maps:
+            return conv_out
+        return [x]   
+        
 ######## Decoders ####################
 
 class unet(nn.Module):
