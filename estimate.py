@@ -5,6 +5,9 @@ from utils.dataset import make_dataLoader
 from utils.utils import lab_to_rgb
 import matplotlib.pyplot as plt
 import numpy as np
+import requests
+from PIL import Image
+from io import BytesIO
 
 def getImages(imgPath="./test_imgs"):
     imdir = imgPath
@@ -14,13 +17,13 @@ def getImages(imgPath="./test_imgs"):
     [test_path.extend(glob.glob(imdir + '/*.' + e)) for e in ext]
     return test_path
 
-def estimate(model,num=0,imgPath="./test_imgs"):
+def estimate_from_folder(model,num=0,imgPath="./test_imgs"):
     test_path = getImages(imgPath)
 
     if num > len(test_path) -1 :
         print("Image number is greater than in file")
         return 0 
-
+    
     img_path = test_path[num:num+1]
     test_dl = make_dataLoader(batch_size=1,img_path=img_path,split="val",shuffle=False)
     test_data = next(iter(test_dl))
@@ -55,4 +58,11 @@ def estimate(model,num=0,imgPath="./test_imgs"):
     gray = np.stack((gray,)*3, axis=-1)
 
     return fake_resize,gray
-   
+
+def estimate_from_url(model,url):
+
+    response = requests.get(url, timeout=30, headers={'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'})
+    img = Image.open(BytesIO(response.content)).convert('RGB')
+    img.save("imgs_download/image.png")
+    colour,gray = estimate_from_folder(model,num=0,imgPath="./imgs_download")
+    return colour,gray
