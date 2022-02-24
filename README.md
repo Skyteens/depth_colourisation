@@ -5,7 +5,7 @@ This project does colourisation of black and white images using the fusion of a 
 
 Feel free to use the google colab notebook to see the results.
 
-Test images are from the COCO dataset
+Test images are from the COCO dataset, further training will be done to try improve quality of results
 
 More information and data will be released later
 
