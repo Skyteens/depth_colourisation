@@ -11,4 +11,4 @@ More information and data will be released later
 
 # Acknowledgements
 
-A lot of the code is influenced or taken off https://github.com/CSAILVision/semantic-segmentation-pytorch for the encoder-decoder and ann off-the-shelf depth estimate "DiverseDepth" from https://github.com/YvanYin/DiverseDepth
+A lot of the code is influenced or taken off https://github.com/CSAILVision/semantic-segmentation-pytorch for the encoder-decoder and an off-the-shelf depth estimate "DiverseDepth" from https://github.com/YvanYin/DiverseDepth
