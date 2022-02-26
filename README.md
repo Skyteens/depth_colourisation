@@ -3,6 +3,8 @@
  
 This project does colourisation of black-and-white images using an encoder-decoder network with the fusion of a depth estimate.
 
+This was trained on a sample of the COCO dataset for 2 days using google coLab.
+
 Feel free to use the google colab notebook to see the results.
 
 Test images are from the COCO dataset, further training will be done to try improve quality of results
