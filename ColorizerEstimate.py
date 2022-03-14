@@ -44,7 +44,7 @@ class Colorizer(nn.Module):
             return out
 
 
-def colorizer_init():
+def colorizer_init(add_weights=True):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     net_encoder = ModelBuilder.build_encoder(
@@ -57,8 +57,10 @@ def colorizer_init():
 
     generator = Generator(net_encoder, net_decoder)
     net_G = generator.to(device)
-    w= "./weights/inst_depth.pt"  #depthColour.pt"
-    net_G.load_state_dict(torch.load(w, map_location=device))
+    
+    if add_weights:
+        w= "./weights/inst_depth.pt"  #depthColour.pt"
+        net_G.load_state_dict(torch.load(w, map_location=device))
 
     for m in net_G.modules():
       for child in m.children():
